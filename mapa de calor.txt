@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Calor de Rugby</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #rugby-field {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            background-image: url('https://static.vecteezy.com/system/resources/previews/003/440/438/non_2x/rugby-field-vector.jpg'); /* Asegúrate de cambiar esta ruta */
+            background-size: cover;
+            border: 1px solid #000;
+        }
+        .heatmap {
+            position: absolute;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Mapa de Calor Táctico de Rugby</h1>
+        <div id="rugby-field"></div>
+        <div class="text-center my-3">
+            <button id="first-half" class="btn btn-primary">Primer Tiempo</button>
+            <button id="second-half" class="btn btn-secondary">Segundo Tiempo</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/heatmap.js"></script>
+    <script>
+        const field = document.getElementById('rugby-field');
+
+        // Inicializa el mapa de calor
+        const heatmapInstance = h337.create({
+            container: field,
+            radius: 40,
+            maxOpacity: 0.6,
+            scaleRadius: true,
+            useGradient: true,
+        });
+
+        // Datos de ejemplo
+        const firstHalfData = [
+            { x: 100, y: 100, value: 50 },
+            { x: 300, y: 200, value: 70 },
+            { x: 400, y: 300, value: 100 },
+            { x: 500, y: 400, value: 80 },
+        ];
+
+        const secondHalfData = [
+            { x: 150, y: 150, value: 60 },
+            { x: 350, y: 250, value: 90 },
+            { x: 450, y: 350, value: 120 },
+            { x: 550, y: 450, value: 70 },
+        ];
+
+        // Cargar datos del primer tiempo inicialmente
+        heatmapInstance.setData({
+            max: 120,
+            data: firstHalfData
+        });
+
+        // Función para agregar nuevos puntos de calor
+        function addHeatmapPoint(x, y, value) {
+            heatmapInstance.addData({ x, y, value });
+        }
+
+        // Ejemplo: agregar un punto al hacer clic en el campo
+        field.addEventListener('click', function(event) {
+            const rect = field.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            addHeatmapPoint(x, y, 100); // Valor puede ser dinámico
+        });
+
+        // Cambiar entre primer y segundo tiempo
+        document.getElementById('first-half').addEventListener('click', () => {
+            heatmapInstance.setData({
+                max: 120,
+                data: firstHalfData
+            });
+        });
+
+        document.getElementById('second-half').addEventListener('click', () => {
+            heatmapInstance.setData({
+                max: 120,
+                data: secondHalfData
+            });
+        });
+    </script>
+</body>
+</html>

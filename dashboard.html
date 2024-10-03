@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rugby Performance Analytics</title>
+    <link rel="icon" type="image/png" href="/img/jugador-de-rugby.png">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Chart.js Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .card {
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        html {
+            scroll-behavior: smooth;
+        }        
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"><i class="fas fa-football-ball"></i> Rugby Performance Analytics</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="jugadores.html">Jugadores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="habilidades.html">Habilidades</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="configuracion.html">Configuración</a>
+                    </li>
+                
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Registrarse</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Dashboard Section -->
+<section id="dashboard" class="container mt-5">
+    <h2 class="mb-4">Dashboard de Rendimiento del Equipo</h2>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Rendimiento General</h5>
+                    <div class="chart-container">
+                        <canvas id="teamPerformanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Estadísticas de Juego</h5>
+                    <div class="chart-container">
+                        <canvas id="gameStatsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Resumen de Rendimiento</h5>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Habilidad</th>
+                            <th>Puntaje</th>
+                            <th>Tendencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td>Velocidad</td>
+                            <td>7.5</td>
+                            <td>
+                                <!-- Icono de tendencia con tooltip -->
+                                <i class="fas fa-arrow-up text-success" data-bs-toggle="tooltip" title="Mejora del 5% en velocidad debido a entrenamientos específicos"></i>
+                            </td>
+                    </tr>
+                <tr>
+                            <td>Fuerza</td>
+                            <td>8.2</td>
+                            <td>
+                                <i class="fas fa-arrow-down text-danger" data-bs-toggle="tooltip" title="Disminución del rendimiento por fatiga muscular"></i>
+                            </td>
+                        </tr>
+                            <tr>
+                            <td>Resistencia</td>
+                            <td>9.1</td>
+                            <td>
+                                <i class="fas fa-arrow-up text-success" data-bs-toggle="tooltip" title="Aumento de resistencia tras mejorar la capacidad aeróbica"></i>
+                            </td>
+                    </tr>
+            </tbody>
+        </table>                      
+<script>
+// Inicializar tooltips de Bootstrap
+document.addEventListener('DOMContentLoaded', function () {
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+                        })
+        });
+</script>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Jugadores -->
+<section id="players" class="container mt-5">
+    <h2 class="mb-4">Perfiles de Jugadores</h2>
+    <div class="row" id="playerCards">
+        <!-- Las tarjetas de jugador se agregarán dinámicamente aquí -->
+    </div>
+</section>
+
+<!-- Sección de habilidades -->
+<section id="skills" class="container mt-5">
+    <h2 class="mb-4">Habilidades Técnicas de Rugby</h2>
+    <div class="accordion" id="skillsAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Habilidades de Manejo de Balón
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#skillsAccordion">
+                <div class="accordion-body">
+                    <ul>
+                        <li>Pase</li>
+                        <li>Recepción</li>
+                        <li>Patada</li>
+                        <li>Sujeción del balón</li>
+                        <li>Pases y cambios de dirección</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Habilidades de Contacto
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#skillsAccordion">
+                <div class="accordion-body">
+                    <ul>
+                        <li>Tackle</li>
+                        <li>Tackle en movimiento</li>
+                        <li>Ruck</li>
+                        <li>Maul</li>
+                        <li>Scrum</li>
+                        <li>Line-Out</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    Habilidades de Juego Abierto
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#skillsAccordion">
+                <div class="accordion-body">
+                    <ul>
+                        <li>Evasión</li>
+                        <li>Apoyo</li>
+                        <li>Lectura del juego</li>
+                        <li>Defensa en línea</li>
+                        <li>Ataque en línea</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <h3>Habilidades a Fortalecer</h3>
+        <div class="progress mb-3">
+            <div class="progress-bar" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">Pase (70%)</div>
+        </div>
+        <div class="progress mb-3">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">Tackle (60%)</div>
+        </div>
+        <div class="progress mb-3">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">Lectura del juego (50%)</div>
+        </div>
+    </div>
+</section>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Iniciar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="loginEmail" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="loginEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerModalLabel">Registrarse</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="registerName" class="form-label">Nombre Completo</label>
+                        <input type="text" class="form-control" id="registerName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerEmail" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="registerEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPassword" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="registerPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerConfirmPassword" class="form-label">Confirmar Contraseña</label>
+                        <input type="password" class="form-control" id="registerConfirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrarse</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Datos del jugador
+const players = [
+    { name: "Marcos Gutierres", position: "Pilar", img: "img/Pilar.jpg", skills: ["Scrum", "Tackle", "Ruck"] },
+    { name: "Carlos Rodríguez", position: "Apertura", img: "img/Apertura.jpg", skills: ["Patada", "Visión de juego", "Pase"] },
+    { name: "Miguel González", position: "Full-Back", img: "img/Full-Back.jpg", skills: ["Velocidad", "Evasión", "Tackle", "Patada táctica"] },
+    { name: "Cheslin Kolbe", position: "Wing", img: "img/Wing.jpg", skills: ["Velocidad", "Placaje", "Apoyo"] }
+];
+
+// Rellenar tarjetas de jugador
+const playerCards = document.getElementById('playerCards');
+players.forEach(player => {
+    const card = document.createElement('div');
+    card.className = 'col-md-3 mb-4';
+    card.innerHTML = `
+        <div class="card">
+            <img src="${player.img}" class="card-img-top" alt="${player.name}">
+            <div class="card-body">
+                <h5 class="card-title">${player.name}</h5>
+                <p class="card-text">Posición: ${player.position}</p>
+                <p class="card-text">Habilidades: ${player.skills.join(', ')}</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#playerModal${players.indexOf(player)}">Ver Detalles</button>
+            </div>
+        </div>
+    `;
+    playerCards.appendChild(card);
+});
+
+    // Crear modales de jugador
+    players.forEach((player, index) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = `playerModal${index}`;
+        modal.setAttribute('tabindex', '-1');
+        modal.setAttribute('aria-labelledby', `playerModalLabel${index}`);
+        modal.setAttribute('aria-hidden', 'true');
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="playerModalLabel${index}">${player.name}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="${player.img}" class="img-fluid mb-3" alt="${player.name}">
+                        <p><strong>Posición:</strong> ${player.position}</p>
+                        <p><strong>Habilidades:</strong></p>
+                        <ul>
+                            ${player.skills.map(skill => `<li>${skill}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    });
+
+// Charts
+const ctx1 = document.getElementById('teamPerformanceChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Rendimiento del Equipo',
+            data: [65, 59, 80, 81, 56, 55],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+const ctx2 = document.getElementById('gameStatsChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: ['Tries', 'Conversiones', 'Penales', 'Drop Goals'],
+        datasets: [{
+            label: 'Estadísticas de Juego',
+            data: [12, 10, 8, 2],
+            backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)', 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+
+// Validación de formulario
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+
+// Habilitar ventanas emergentes
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+})
+
+// Habilitar tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+
+// Mostrar brindis de bienvenida
+window.addEventListener('load', function() {
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function(toastEl) {
+        return new bootstrap.Toast(toastEl)
+    })
+    toastList.forEach(toast => toast.show())
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rugby Performance Analytics - Habilidades</title>
+    <link rel="icon" type="image/png" href="/img/jugador-de-rugby.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .sidebar .nav-link {
+            color: #fff;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #495057;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .skill-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><i class="fas fa-football-ball"></i> Rugby Performance Analytics</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.html">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="jugadores.html">Jugadores</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="habilidades.html">Habilidades</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="configuracion.html">Configuración</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Iniciar Sesión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Registrarse</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Habilidades Técnicas de Rugby</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSkillModal">
+                    <i class="fas fa-plus"></i> Añadir Habilidad
+                </button>
+            </div>
+
+            <!-- Skills Overview -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Resumen de Habilidades del Equipo</h5>
+                            <canvas id="skillsRadarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Habilidades a Fortalecer</h5>
+                            <ul class="list-group" id="skillsToImprove">
+                                <!-- Filled dynamically by JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Grid -->
+            <div class="row mt-4" id="skillsGrid">
+                <!-- Filled dynamically by JavaScript -->
+            </div>
+
+            <!-- Add Skill Modal -->
+            <div class="modal fade" id="addSkillModal" tabindex="-1" aria-labelledby="addSkillModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addSkillModalLabel">Añadir Nueva Habilidad</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addSkillForm">
+                                <div class="mb-3">
+                                    <label for="skillName" class="form-label">Nombre de la Habilidad</label>
+                                    <input type="text" class="form-control" id="skillName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="skillDescription" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="skillDescription" rows="3" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="skillIcon" class="form-label">Icono (clase de Font Awesome)</label>
+                                    <input type="text" class="form-control" id="skillIcon" placeholder="Ej: fas fa-running">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" id="saveSkillBtn">Guardar Habilidad</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Datos de muestra de habilidades
+    const skills = [
+        { name: 'Pase', level: 9, icon: 'fas fa-football-ball' },
+        { name: 'Tackle', level: 7, icon: 'fas fa-user-friends' },
+        { name: 'Patada', level: 8, icon: 'fas fa-shoe-prints' },
+        { name: 'Scrum', level: 9, icon: 'fas fa-users' },
+        { name: 'Line-out', level: 10, icon: 'fas fa-arrows-alt-v' },
+        { name: 'Ruck', level: 7, icon: 'fas fa-fist-raised' },
+        { name: 'Maul', level: 8, icon: 'fas fa-people-carry' },
+        { name: 'Resistencia', level: 10, icon: 'fas fa-heartbeat' },
+        { name: 'Velocidad', level: 10, icon:'fas fa-running'},
+        { name: 'Defensa', level: 9, icon:'fas fa-user-shield'},
+        { name: 'Fuerza', level: 10, icon:'fas fa-dumbbell'},
+        { name: 'Precisión', level: 9, icon:'fas fa-bullseye'},
+        { name: 'Agilidad', level: 7, icon:'fas fa-feather'},
+    ];
+
+    // Populate skills grid
+    const skillsGrid = document.getElementById('skillsGrid');
+    skills.forEach(skill => {
+        const skillCard = `
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="${skill.icon} skill-icon"></i>
+                        <h5 class="card-title">${skill.name}</h5>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: ${skill.level * 10}%;" 
+                                aria-valuenow="${skill.level}" aria-valuemin="0" aria-valuemax="10">
+                                ${skill.level}/10
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        skillsGrid.innerHTML += skillCard;
+    });
+
+    // Radar Chart
+    const ctx = document.getElementById('skillsRadarChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: skills.map(skill => skill.name),
+            datasets: [{
+                label: 'Nivel de Habilidad',
+                data: skills.map(skill => skill.level),
+                fill: true,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                pointBackgroundColor: 'rgb(54, 162, 235)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(54, 162, 235)'
+            }]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            scale: {
+                ticks: {
+                    beginAtZero: true,
+                    max: 10
+                }
+            }
+        }
+    });
+
+    // Populate skills to improve
+    const skillsToImprove = document.getElementById('skillsToImprove');
+    skills.sort((a, b) => a.level - b.level)
+        .slice(0, 3)
+        .forEach(skill => {
+            const listItem = `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${skill.name}
+                    <span class="badge bg-primary rounded-pill">${skill.level}/10</span>
+                </li>
+            `;
+            skillsToImprove.innerHTML += listItem;
+});
+
+    // Add new skill functionality
+    const addSkillForm = document.getElementById('addSkillForm');
+    const saveSkillBtn = document.getElementById('saveSkillBtn');
+
+    saveSkillBtn.addEventListener('click', () => {
+        const skillName = document.getElementById('skillName').value;
+        const skillDescription = document.getElementById('skillDescription').value;
+        const skillIcon = document.getElementById('skillIcon').value;
+
+        if (skillName && skillDescription) {
+            // Here you would typically send this data to your backend
+            console.log('New skill:', { name: skillName, description: skillDescription, icon: skillIcon });
+            
+            // For demo purposes, we'll just add it to the grid
+            const newSkillCard = `
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="${skillIcon || 'fas fa-star'} skill-icon"></i>
+                            <h5 class="card-title">${skillName}</h5>
+                            <p class="card-text">${skillDescription}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            skillsGrid.innerHTML += newSkillCard;
+
+            // Close the modal and reset form
+            bootstrap.Modal.getInstance(document.getElementById('addSkillModal')).hide();
+            addSkillForm.reset();
+        }
+    });
+});
+</script>
+</body>
+</html>

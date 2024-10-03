@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rugby Performance Analytics - Configuración</title>
+    <link rel="icon" type="image/png" href="/img/jugador-de-rugby.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .sidebar .nav-link {
+            color: #fff;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #495057;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="jugadores.html">
+                            <i class="fas fa-users"></i> Jugadores
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="habilidades.html">
+                            <i class="fas fa-dumbbell"></i> Habilidades
+                        </a>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Configuración</h1>
+            </div>
+
+            <!-- Settings Sections -->
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Account Settings -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Configuración de la Cuenta</h5>
+                            <form>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Correo Electrónico</label>
+                                    <input type="email" class="form-control" id="email" value="usuario@ejemplo.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="password" placeholder="********">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Notification Settings -->
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Configuración de Notificaciones</h5>
+                            <form>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="emailNotifications" checked>
+                                    <label class="form-check-label" for="emailNotifications">Recibir notificaciones por correo electrónico</label>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="smsNotifications">
+                                    <label class="form-check-label" for="smsNotifications">Recibir notificaciones por SMS</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Guardar Preferencias</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Team Settings -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Configuración del Equipo</h5>
+                            <form>
+                                <div class="mb-3">
+                                    <label for="teamName" class="form-label">Nombre del Equipo</label>
+                                    <input type="text" class="form-control" id="teamName" value="Leones RFC">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="teamLogo" class="form-label">Logo del Equipo</label>
+                                    <input type="file" class="form-control" id="teamLogo">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="primaryColor" class="form-label">Color Primario</label>
+                                    <input type="color" class="form-control form-control-color" id="primaryColor" value="#007bff">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Actualizar Equipo</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Gestión de Datos</h5>
+                            <p>Exporta o importa datos de tu equipo.</p>
+                            <button class="btn btn-secondary mb-2" data-bs-toggle="modal" data-bs-target="#exportModal">Exportar Datos</button>
+                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#importModal">Importar Datos</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Modal -->
+            <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exportModalLabel">Exportar Datos</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Selecciona el formato de exportación:</p>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="exportFormat" id="csvFormat" checked>
+                                <label class="form-check-label" for="csvFormat">
+                                    CSV
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="exportFormat" id="jsonFormat">
+                                <label class="form-check-label" for="jsonFormat">
+                                    JSON
+                                </label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary">Exportar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Modal -->
+            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="importModalLabel">Importar Datos</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Selecciona el archivo para importar:</p>
+                            <input type="file" class="form-control" id="importFile">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary">Importar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Toggle password visibility
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.createElement('button');
+    togglePassword.type = 'button';
+    togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
+    togglePassword.className = 'btn btn-outline-secondary';
+    passwordInput.parentNode.appendChild(togglePassword);
+
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.querySelector('i').classList.toggle('fa-eye');
+        this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+
+    // Color picker preview
+    const primaryColorInput = document.getElementById('primaryColor');
+    primaryColorInput.addEventListener('input', function() {
+        document.documentElement.style.setProperty('--primary-color', this.value);
+    });
+
+    // File upload preview
+    const teamLogoInput = document.getElementById('teamLogo');
+    teamLogoInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '100px';
+                img.style.marginTop = '10px';
+                teamLogoInput.parentNode.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Form submission handling (prevent default for demo)
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Cambios guardados exitosamente!');
+        });
+    });
+
+    // Modal actions
+    const exportBtn = document.querySelector('#exportModal .btn-primary');
+    exportBtn.addEventListener('click', function() {
+        alert('Datos exportados exitosamente!');
+        bootstrap.Modal.getInstance(document.getElementById('exportModal')).hide();
+    });
+
+    const importBtn = document.querySelector('#importModal .btn-primary');
+    importBtn.addEventListener('click', function() {
+        alert('Datos importados exitosamente!');
+        bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+    });
+});
+</script>
+</body>
+</html>

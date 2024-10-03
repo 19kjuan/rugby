@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rugby Performance Analytics - Jugadores</title>
+    <link rel="icon" type="image/png" href="/img/jugador-de-rugby.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .card {
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .player-avatar img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .skill-badge {
+            margin-right: 5px;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 12px;
+            background-color: #3498db;
+            color: white;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-football-ball"></i> Rugby Performance Analytics</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="jugadores.html">Jugadores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="habilidades.html">Habilidades</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="configuracion.html">Configuración</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Perfiles de Jugadores</h1>
+        
+        <div class="row" id="playerCards">
+            <!-- Las tarjetas de los jugadores se añadirán dinámicamente aquí -->
+        </div>
+    </div>
+
+    <!-- Modal del jugador -->
+    <div class="modal fade" id="playerModal" tabindex="-1" aria-labelledby="playerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="playerModalLabel">Detalles del Jugador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="modalPlayerAvatar" class="player-avatar rounded"></div>
+                        </div>
+                        <div class="col-md-8">
+                            <h2 id="modalPlayerName"></h2>
+                            <p><strong>Posición:</strong> <span id="modalPlayerPosition"></span></p>
+                            <p><strong>Edad:</strong> <span id="modalPlayerAge"></span></p>
+                            <p><strong>Altura:</strong> <span id="modalPlayerHeight"></span></p>
+                            <p><strong>Peso:</strong> <span id="modalPlayerWeight"></span></p>
+                            <h5>Habilidades:</h5>
+                            <div id="modalPlayerSkills"></div>
+                            <h5 class="mt-3">Estadísticas:</h5>
+                            <canvas id="playerStatsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // Datos de los jugadores
+    const players = [
+        { 
+            name: "Marcos Gutierres", 
+            position: "Pilar", 
+            img: "img/Pilar.jpg",  // Imagen del jugador
+            skills: ["Scrum", "Tackle", "Ruck",],
+            age: 28,
+            height: "1.85m",
+            weight: "110kg",
+            stats: {
+                tackles: 85,
+                meters: 150,
+                turnovers: 5,
+                tries: 8,         
+                passes: 100,      
+                conversions: 3,   
+                kicks: 20,
+                velocidad: 85,
+                Fuerza: 95,
+                precision: 70,
+                agilidad: 69,
+                defensa: 95,
+                resistencia: 99
+            }
+        },
+        { 
+            name: "Carlos Rodríguez", 
+            position: "Apertura", 
+            img: "/img/Apertura.jpg",  // Imagen del jugador
+            skills: ["Patada", "Visión de juego", "Pase"],
+            age: 25,
+            height: "1.78m",
+            weight: "85kg",
+            stats: {
+                tackles: 500,
+                meters: 400,
+                turnovers: 0
+            }
+        },
+        { 
+            name: "Miguel González", 
+            position: "Full-Back", 
+            img: "/img/full-back.jpg",  // Imagen del jugador
+            skills: ["Velocidad", "Evasión", "Tackle", "Patada táctica"],
+            age: 24,
+            height: "1.82m",
+            weight: "92kg",
+            stats: {
+                tackles: 65,
+                meters: 400,
+                turnovers: 3
+            }
+        },
+        { 
+            name: "Cheslin Kolbe", 
+            position: "Left Wing", 
+            img: "/img/Wing.jpg",  // Imagen del jugador
+            skills: ["Velocidad", "Placaje", "Apoyo", "Aceleración", "Explosividad", "Juego de pies", "Tackle"],
+            age: 26,
+            height: "1.72m",
+            weight: "75kg",
+            stats: {
+                tackles: 80,
+                meters: 100,
+                turnovers: 2
+            }
+        },
+
+        { 
+            name: "Cyrill Baille", 
+            position: "Pilar Izquierdo", 
+            img: "/img/cyril-baille.jpg", 
+            skills: ["Defensa", "Velocidad", "Ataque", "Scrum", "Técnica en set-piece", "Breakdown"],
+            age: 30,
+            height: "1.82m",
+            weight: "118kg",
+            stats: {
+                tackles: 10-15,
+                meters: 200,
+                turnovers: 1-2,
+                tries: 1-3,
+                passes: 3,
+                conversions: 1,
+                kicks: 1,
+                velocidad: 95,
+                Fuerza: 96,
+                precision: 98,
+                agilidad: 85,
+                defensa: 92,
+                resistencia: 96
+            }
+        },
+            {
+                name: "Malcom Marx",
+                position: "Hooker",
+                img: "/img/Malcolm-Marx.jpg",
+                skills: ["Breakdown", "Fuerza Física", "Precisión en LineOut"],
+                age: 30,
+                height: "1.88m",
+                weight: "116kg",
+                stats: {
+                    tackles: 100,
+                    meters: 150,
+                    turnovers: 4,
+                    tries: 70,
+                    passes: 60,
+                    conversions: 0,
+                    kicks: 0,
+                    velocidad: 100,
+                    Fuerza: 100,
+                    precision: 100,
+                    agilidad: 100,
+                    defensa: 100,
+                    resistencia: 100
+                }
+            },
+            {
+                name: "Tadhg Furlong",
+                position: "Prop",
+                img: "/img/Tadhg-Furlong.jpg",
+                skills: ["Juego de mano", "Visión en Ataque", "Resistencia", "Movilidad"],
+                age: 31,
+                height: "1.85m",
+                weight: "125kg",
+                stats: {
+                    tackles: 70,
+                    meters: 120,
+                    turnovers: 2
+                }
+            },
+            {
+                name: "Maro Itoje",
+                position: "Ala",
+                img: "/img/Maro-Itoje.jpg",
+                skills: ["LineOut", "Fuerza Física", "Defensa", "Presencia Mental", "Liderazgo"],
+                age: 29,
+                height: "1.98m",
+                weight: "118kg",
+                stats: {
+                    tackles: 178,
+                    meters: 240,
+                    turnovers: 6
+                }
+            },
+            {
+                name: "Brodie Retallick",
+                position: "segunda Línea",
+                img: "/img/brodie-retallick.jpg",
+                skills: ["Rucks", "Contacto Físico", "LineOut", "Resistencia"],
+                age: 33,
+                height: "2.04m",
+                weight: "123kg",
+                stats: {
+                    tackles: 90,
+                    meters: 415,
+                    turnovers: 8
+                }
+            },
+            {
+                name: "Pieter-Steph du Toit",
+                position: "Segunda Línea",
+                img: "/img/pieter-steph.png",
+                skills: ["Tackle", "Resistencia", "Habilidad con balón en mano"],
+                age: 32,
+                height: "2m",
+                weight: "115kg",
+                stats: {
+                    tackles: 79,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Tom Curry",
+                position: "Ala",
+                img: "/img/Tom-Curry.jpg",
+                skills: ["Inteligencia en el Breackdown", "Defensa", "Agilidad", "Resistencia"],
+                age: 26,
+                height: "1.85m",
+                weight: "110kg",
+                stats: {
+                    tackles: 154,
+                    meters: 220,
+                    turnovers: 0
+                }
+            },
+            {
+                name: "Ardie Savea",
+                position: "Number 8",
+                img: "/img/Ardie-Savea.png",
+                skills: ["Velocidad", "Explosividad", "Habilidad con balón"],
+                age: 30,
+                height: "1.88m",
+                weight: "95kg",
+                stats: {
+                    tackles: 30,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Antoine Dupont",
+                position: "Scrum-Half",
+                img: "/img/Antoine-Dupont.jpg",
+                skills: ["Vision de juego", "Agilidad", "Fuerza", "Defensa"],
+                age: 27,
+                height: "1.74m",
+                weight: "85kg",
+                stats: {
+                    tackles: 40,
+                    meters: 120,
+                    turnovers: 3
+                }
+            },
+            {
+                name: "Beauden Barrett",
+                position: "Fly-Half",
+                img: "/img/Beauden-Barrett.jpg",
+                skills: ["Velocidad", "Aceleración", "Control del partido", "Versatilidad"],
+                age: 33,
+                height: "1.87m",
+                weight: "91kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Owen Farrell",
+                position: "Inside Centre",
+                img: "/img/Owen-Farrell.png",
+                skills: ["Distribución", "Toma de decisiones", "Precisión con el pie", "Mentalidad"],
+                age: 32,
+                height: "1.88m",
+                weight: "92kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Lukhanyo Am",
+                position: "Outside Centre",
+                img: "/img/Lukhanyo-Am.png",
+                skills: ["Defensa", "Ataque", "Creador"],
+                age: 30,
+                height: "1.86m",
+                weight: "93kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Damian Penaud",
+                position: "Right Wing",
+                img: "/img/Damian-Penaud.jpg",
+                skills: ["Finalizador", "Juego Aéreo", "Lectura del juego"],
+                age: 27,
+                height: "1.92m",
+                weight: "95kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Stuart Hogg",
+                position: "Full-Back",
+                img: "/img/Stuart-hogg.jpg",
+                skills: ["Contraataque", "Patada Potente", "Velocidad", "Agilidad"],
+                age: 32,
+                height: "1.80m",
+                weight: "92kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Dane Coles",
+                position: "Hooker",
+                img: "/img/Dane-Coles.jpg",
+                skills: ["Movilidad", "Juego Abierto", "Experiencia", "Precisión"],
+                age: 37,
+                height: "1.84m",
+                weight: "110kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Ellis Genge",
+                position: "Pilar",
+                img: "/img/Ellis-Genge.jpg",
+                skills: ["Potencia Física", "Actitud Agresiva"],
+                age: 29,
+                height: "1.85m",
+                weight: "116kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Kyle Sinckler",
+                position: "Pilar",
+                img: "/img/Kyle-Sinclker.png",
+                skills: ["Versatil en ataque y defensa", "Juego Agresivo"],
+                age: 31,
+                height: "1.83m",
+                weight: "116kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Courtney Lawes",
+                position: "Lock/Flanker",
+                img: "/img/Courtney-Lawes.jpg",
+                skills: ["Flexibilidad en el equipo", "Tackle"],
+                age: 35,
+                height: "2.01m",
+                weight: "119kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Hamish Watson",
+                position: "Back Row",
+                img: "/img/Hamish-watson.jpg",
+                skills: ["Dinamismo en el Breakdown", "Defensa"],
+                age: 32,
+                height: "1.85m",
+                weight: "102kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Faf De Klerk",
+                position: "Scrum-Half",
+                img: "/img/Faf-de-Klerk.jpg",
+                skills: ["Agresivo y rapido en el Breakdown", "Patada Táctica"],
+                age: 32,
+                height: "1.71m",
+                weight: "88kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Finn Russell",
+                position: "Fly-Half/Centre",
+                img: "/img/Finn-Russell.jpg",
+                skills: ["Creatividad e imprevisibilidad", "Patada Versátil"],
+                age: 31,
+                height: "1.82m",
+                weight: "87kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            },
+            {
+                name: "Jordie Barrett",
+                position: "Back Three",
+                img: "/img/Jordie-Barrett.jpg",
+                skills: ["Potencia", "Presicion en el pie", "Multiples posiciones"],
+                age: 27,
+                height: "1.94m",
+                weight: "102kg",
+                stats: {
+                    tackles: 80,
+                    meters: 120,
+                    turnovers: 5
+                }
+            }
+    ];
+    
+
+    // Añadir las tarjetas de los jugadores dinámicamente
+    const playerCards = document.getElementById('playerCards');
+    players.forEach((player, index) => {
+        const card = document.createElement('div');
+        card.className = 'col-md-3 mb-4';
+        card.innerHTML = `
+            <div class="card">
+                <div class="player-avatar card-img-top d-flex align-items-center justify-content-center">
+                    <img src="${player.img}" alt="${player.name}" />
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">${player.name}</h5>
+                    <p class="card-text">Posición: ${player.position}</p>
+                    <p class="card-text">
+                        ${player.skills.map(skill => `<span class="badge bg-primary skill-badge">${skill}</span>`).join('')}
+                    </p>
+                    <button class="btn btn-primary" onclick="showPlayerDetails(${index})">Ver Detalles</button>
+                </div>
+            </div>
+        `;
+        playerCards.appendChild(card);
+    });
+
+    // Mostrar los detalles del jugador en el modal
+    function showPlayerDetails(playerIndex) {
+        const player = players[playerIndex];
+        const modal = new bootstrap.Modal(document.getElementById('playerModal'));
+        
+        document.getElementById('modalPlayerAvatar').innerHTML = `<img src="${player.img}" alt="${player.name}" />`;
+        document.getElementById('modalPlayerName').textContent = player.name;
+        document.getElementById('modalPlayerPosition').textContent = player.position;
+        document.getElementById('modalPlayerAge').textContent = player.age;
+        document.getElementById('modalPlayerHeight').textContent = player.height;
+        document.getElementById('modalPlayerWeight').textContent = player.weight;
+        
+        const skillsContainer = document.getElementById('modalPlayerSkills');
+        skillsContainer.innerHTML = player.skills.map(skill => `<span class="badge bg-primary skill-badge">${skill}</span>`).join('');        
+        // Crear o actualizar el gráfico de estadísticas
+        const ctx = document.getElementById('playerStatsChart').getContext('2d');
+        if (window.playerChart) {
+            window.playerChart.destroy();
+        }
+        window.playerChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Tackles', 'Metros Ganados', 'Turnovers', 'Tries', 'Passes', 'Conversions', 'Kicks', 'Velocidad', 'Fuerza', 'Precisión', 'Agilidad', "Defensa", "Resistencia"], 
+                datasets: [{
+                    label: 'Estadísticas del Jugador',
+                    data: [player.stats.tackles, player.stats.meters, player.stats.turnovers, player.stats.tries, player.stats.passes, player.stats.conversions, player.stats.kicks, player.stats.velocidad, player.stats.Fuerza, player.stats.precision, player.stats.agilidad, player.stats.defensa, player.stats.resistencia],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(23, 162, 235)',
+                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(54, 162, 235)'
+                }]
+            },
+            
+        });
+        
+        modal.show();
+    }
+    </script>
+</body>
+</html>
